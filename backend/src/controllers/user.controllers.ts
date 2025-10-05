@@ -35,6 +35,8 @@ export const userSignup = async (
     await newuser.save();
 
     // create token and store cookie
+
+    // Clear any existing auth cookie first
     res.clearCookie(COOKIE_NAME, {
       httpOnly: true,
       domain: "localhost",
@@ -42,15 +44,21 @@ export const userSignup = async (
       path: "/",
     });
 
+    // Generate a new JWT valid for 7 days
     const token = createToken(newuser._id.toString(), newuser.email, "7d");
+
+    // Compute expiry date for the cookie
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
+    //Note: This line set expiry date for cookie. Expiry date for token has already been set. Also we always need to match cookie and token expiry date so that cookie don't expire before token expires(because if it would the valid jwt would not be in browser and user needs to login again)
+
+    // Set new signed cookie having JWT
     res.cookie(COOKIE_NAME, token, {
-      path: "/",
-      domain: "localhost",
-      expires,
-      httpOnly: true,
-      signed: true,
+      path: "/", // Cookie valid for all routes
+      domain: "localhost", // Only valid for localhost
+      expires, // Expiry date (7 days)
+      httpOnly: true, // Prevent JS access to cookie
+      signed: true, // Signs cookie using COOKIE_SECRET
     });
 
     return res
@@ -85,22 +93,27 @@ export const userLogin = async (
 
     // create token and store cookie
 
+    // Clear any existing auth cookie first
     res.clearCookie(COOKIE_NAME, {
       httpOnly: true,
       domain: "localhost",
       signed: true,
       path: "/",
     });
-
+    // Generate a new JWT valid for 7 days
     const token = createToken(user._id.toString(), user.email, "7d");
+
+    // Compute expiry date for the cookie
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
+
+    // Set new signed cookie having JWT
     res.cookie(COOKIE_NAME, token, {
-      path: "/",
-      domain: "localhost",
-      expires,
-      httpOnly: true,
-      signed: true,
+      path: "/", // Cookie valid for all routes
+      domain: "localhost", // Only valid for localhost
+      expires, // Expiry date (7 days)
+      httpOnly: true, // Prevent JS access to cookie
+      signed: true, // Signs cookie using COOKIE_SECRET
     });
 
     return res

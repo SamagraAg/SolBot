@@ -23,11 +23,11 @@ export const userSignup = async (
 ) => {
   try {
     const { name, email, password } = req.body;
-    const user = User.find(email);
+    const user = await User.findOne({ email });
     if (user)
       return res
-        .status(400)
-        .json({ success: false, error: "Duplicate user exist" });
+        .status(409)
+        .json({ success: false, error: "User already exist" });
     const hashedPassword = await hash(password, 10);
     const newuser = new User({ name, email, password: hashedPassword });
     await newuser.save();

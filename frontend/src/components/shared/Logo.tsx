@@ -7,16 +7,16 @@ const Logo = () => {
         display: "flex",
         marginRight: "auto",
         alignItems: "center",
-        gap: "15px",
+        gap: "5px",
       }}
     >
       <Link to={"/"}>
         <img
-          src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/openai-icon.png"
+          src="Logo.png"
           alt="openai"
-          width={"30px"}
-          height={"30px"}
-          className="image-inverted"
+          width={"100x"}
+          height={"80px"}
+        //   className="image-inverted"
         />
       </Link>{" "}
       <Typography

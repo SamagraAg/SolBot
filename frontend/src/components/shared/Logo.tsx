@@ -16,7 +16,7 @@ const Logo = () => {
           alt="openai"
           width={"100x"}
           height={"80px"}
-        //   className="image-inverted"
+          //   className="image-inverted"
         />
       </Link>{" "}
       <Typography
@@ -27,7 +27,7 @@ const Logo = () => {
           textShadow: "2px 2px 20px #000",
         }}
       >
-        <span style={{ fontSize: "20px" }}>SOL</span>BOT
+        <span style={{ fontSize: "20px" }}>SAMPARK.</span>AI
       </Typography>
     </div>
   );

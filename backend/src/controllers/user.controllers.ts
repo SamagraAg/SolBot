@@ -138,11 +138,6 @@ export const verifyUser = async (
     if (!user) {
       return res.status(401).send("User not registered OR Token malfunctioned");
     }
-    if (user._id.toString() !== res.locals.jwtData.id) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permissions didn't match" });
-    }
     return res
       .status(200)
       .json({ success: true, name: user.name, email: user.email });

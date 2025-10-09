@@ -23,24 +23,27 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.signedCookies[`${COOKIE_NAME}`];
-  if (!token || token.trim() === "") {
+  try {
+    //Reads the token from the signed cookies
+    const token = req.signedCookies[`${COOKIE_NAME}`];
+
+    //If token empty / token not found, then reject the request
+    if (!token || token.trim() === "") {
+      return res
+        .status(401)
+        .json({ success: false, message: "Token Not Received" });
+    }
+
+    // verify returns decoded payload if valid, throws error if invalid
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+
+    // store the decoded payload (like userId, email, etc.) for later use
+    res.locals.jwtData = decoded;
+
+    return next();
+  } catch (error) {
     return res
       .status(401)
-      .json({ success: false, message: "Token Not Received" });
+      .json({ success: false, message: "Invalid or expired token" });
   }
-  return new Promise<void>((resolve, reject) => {
-    return jwt.verify(token, process.env.JWT_SECRET, (err, success) => {
-      if (err) {
-        reject(err.message);
-        return res
-          .status(401)
-          .json({ success: false, message: "Token Expired" });
-      } else {
-        resolve();
-        res.locals.jwtData = success; //res.locals.jwtData = now has the data which was stored in cookies
-        return next();
-      }
-    });
-  });
 };

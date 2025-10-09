@@ -1,12 +1,12 @@
 import express from "express";
 import { config } from "dotenv";
+config();
 import router from "./routes/index.routes.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
 
 const app = express();
-config();
 
 //middlewares
 //Parse request bodies as json

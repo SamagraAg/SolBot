@@ -126,3 +126,30 @@ export const userLogin = async (
       .json({ success: false, message: "server side error" });
   }
 };
+
+export const verifyUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //user token check
+    const user = await User.findById(res.locals.jwtData.id);
+    if (!user) {
+      return res.status(401).send("User not registered OR Token malfunctioned");
+    }
+    if (user._id.toString() !== res.locals.jwtData.id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permissions didn't match" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, name: user.name, email: user.email });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: `server side error:${error.message}` });
+  }
+};

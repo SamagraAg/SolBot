@@ -35,6 +35,28 @@ export const generateChatCompletion = async (
     console.log(error);
     return res
       .status(500)
-      .json({ success: false, message: "Server side errror " });
+      .json({ success: false, message: `Server side error: ${error.message}` });
+  }
+};
+
+export const sendChatsToUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //user token check
+    const user = await UserModel.findById(res.locals.jwtData.id);
+    if (!user)
+      return res.status(401).json({
+        success: false,
+        message: "User not registered OR Token malfunctioned",
+      });
+    return res.status(200).json({ success: true, chats: user.chats });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json({ success: false, message: `Server side error: ${error.message}` });
   }
 };

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../utils/token-manager.js";
-import { generateChatCompletion } from "../controllers/chat.controllers.js";
+import { generateChatCompletion, sendChatsToUser } from "../controllers/chat.controllers.js";
 import { chatCompletionValidator, validate } from "../utils/validators.js";
 
 //protected apis
@@ -12,4 +12,6 @@ chatRouter.post(
   verifyToken,
   generateChatCompletion
 );
+
+chatRouter.get("/all-chats",verifyToken,sendChatsToUser)
 export default chatRouter;

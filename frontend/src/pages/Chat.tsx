@@ -39,25 +39,26 @@ const Chat = () => {
   //     toast.error("Deleting chats failed", { id: "deletechats" });
   //   }
   // };
-  useLayoutEffect(() => {
-    if (auth?.isLoggedIn && auth.user) {
-      toast.loading("Loading Chats", { id: "loadchats" });
-      getUserChats()
-        .then((data) => {
-          setChatMessages([...data.chats]);
-          toast.success("Successfully loaded chats", { id: "loadchats" });
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error("Loading Failed", { id: "loadchats" });
-        });
+useEffect(() => {
+  if (!auth?.user) {
+    navigate("/login");
+    return;
+  }
+
+  const fetchChats = async () => {
+    toast.loading("Loading Chats", { id: "loadchats" });
+    try {
+      const data = await getUserChats();
+      setChatMessages(data.chats);
+      toast.success("Successfully loaded chats", { id: "loadchats" });
+    } catch (err) {
+      console.error(err);
+      toast.error("Loading Failed", { id: "loadchats" });
     }
-  }, [auth]);
-  useEffect(() => {
-    if (!auth?.user) {
-      navigate("/login");
-    }
-  }, [auth]);
+  };
+
+  fetchChats();
+}, [auth?.user]);
   return (
     <Box
       sx={{

@@ -14,7 +14,9 @@ export const getAllUsers = async (
     return res.status(200).json({ success: true, users });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ success: false, message: "server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: `Server side error: ${error.message}` });
   }
 };
 
@@ -29,7 +31,7 @@ export const userSignup = async (
     if (user)
       return res
         .status(409)
-        .json({ success: false, error: "User already exist" });
+        .json({ success: false, message: "User already exist" });
     const hashedPassword = await hash(password, 10);
     const newuser = new User({ name, email, password: hashedPassword });
     await newuser.save();
@@ -66,7 +68,9 @@ export const userSignup = async (
       .json({ success: true, name: newuser.name, email: newuser.email });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ success: false, message: "server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: `Server side error: ${error.message}` });
   }
 };
 
@@ -123,7 +127,7 @@ export const userLogin = async (
     console.log(error);
     return res
       .status(500)
-      .json({ success: false, message: "server side error" });
+      .json({ success: false, message: `Server side error: ${error.message}` });
   }
 };
 
@@ -135,9 +139,11 @@ export const verifyUser = async (
   try {
     //user token check
     const user = await User.findById(res.locals.jwtData.id);
-    if (!user) {
-      return res.status(401).send("User not registered OR Token malfunctioned");
-    }
+    if (!user)
+      return res.status(401).json({
+        success: false,
+        message: "User not registered OR Token malfunctioned",
+      });
     return res
       .status(200)
       .json({ success: true, name: user.name, email: user.email });
@@ -145,6 +151,38 @@ export const verifyUser = async (
     console.log(error);
     return res
       .status(500)
-      .json({ success: false, message: `server side error:${error.message}` });
+      .json({ success: false, message: `Server side error: ${error.message}` });
+  }
+};
+
+export const userLogout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //user token check
+    const user = await User.findById(res.locals.jwtData.id);
+    if (!user)
+      return res.status(401).json({
+        success: false,
+        message: "User not registered OR Token malfunctioned",
+      });
+
+    res.clearCookie(COOKIE_NAME, {
+      httpOnly: true,
+      domain: "localhost",
+      signed: true,
+      path: "/",
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, name: user.name, email: user.email });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Server side error: ${error.message}` });
   }
 };

@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import ChatItem from "../components/chat/ChatItem";
 import { IoMdSend } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { sendChatRequest } from "../helpers/api-communicator";
+import { getUserChats, sendChatRequest } from "../helpers/api-communicator";
 import toast from "react-hot-toast";
 import { red } from "@mui/material/colors";
 type Message = {
@@ -39,20 +39,20 @@ const Chat = () => {
   //     toast.error("Deleting chats failed", { id: "deletechats" });
   //   }
   // };
-  // useLayoutEffect(() => {
-  //   if (auth?.isLoggedIn && auth.user) {
-  //     toast.loading("Loading Chats", { id: "loadchats" });
-  //     getUserChats()
-  //       .then((data) => {
-  //         setChatMessages([...data.chats]);
-  //         toast.success("Successfully loaded chats", { id: "loadchats" });
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         toast.error("Loading Failed", { id: "loadchats" });
-  //       });
-  //   }
-  // }, [auth]);
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth.user) {
+      toast.loading("Loading Chats", { id: "loadchats" });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success("Successfully loaded chats", { id: "loadchats" });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Loading Failed", { id: "loadchats" });
+        });
+    }
+  }, [auth]);
   useEffect(() => {
     if (!auth?.user) {
       navigate("/login");

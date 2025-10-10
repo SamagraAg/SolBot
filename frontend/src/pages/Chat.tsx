@@ -5,11 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import ChatItem from "../components/chat/ChatItem";
 import { IoMdSend } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-// import {
-//   deleteUserChats,
-//   getUserChats,
-//   sendChatRequest,
-// } from "../helpers/api-communicator";
+import { sendChatRequest } from "../helpers/api-communicator";
 import toast from "react-hot-toast";
 import { red } from "@mui/material/colors";
 type Message = {
@@ -20,35 +16,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
-  const [chatMessages, setChatMessages] = useState<Message[]>([
-    {
-      role: "user",
-      content: "Hey, can you explain how JWT authentication works?",
-    },
-    {
-      role: "model",
-      content:
-        "Sure. JWT (JSON Web Token) is a stateless authentication mechanism that encodes user data in a signed token, which the client sends with each request to verify identity.",
-    },
-    {
-      role: "user",
-      content: "What are the main parts of a JWT?",
-    },
-    {
-      role: "model",
-      content:
-        "A JWT has three parts: header, payload, and signature — separated by dots. Example: header.payload.signature.",
-    },
-    {
-      role: "user",
-      content: "Got it. How should I store JWTs securely on the client side?",
-    },
-    {
-      role: "model",
-      content:
-        "Prefer storing JWTs in HTTP-only cookies to prevent XSS attacks. Avoid localStorage unless you fully understand the risks.",
-    },
-  ]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const handleSubmit = async () => {
     const content = inputRef.current?.value as string;
     if (inputRef && inputRef.current) {
@@ -56,8 +24,8 @@ const Chat = () => {
     }
     const newMessage: Message = { role: "user", content };
     setChatMessages((prev) => [...prev, newMessage]);
-    // const chatData = await sendChatRequest(content);
-    // setChatMessages([...chatData.chats]);
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
     //
   };
   // const handleDeleteChats = async () => {
@@ -190,7 +158,7 @@ const Chat = () => {
             scrollBehavior: "smooth",
             scrollbarWidth: "thin",
             scrollbarColor: "#555 transparent",
-          }}  
+          }}
         >
           {chatMessages.map((chat, index) => (
             //@ts-ignore
@@ -206,9 +174,8 @@ const Chat = () => {
             margin: "auto",
           }}
         >
-          
           <input
-            // ref={inputRef}
+            ref={inputRef}
             type="text"
             placeholder="Write your message"
             style={{

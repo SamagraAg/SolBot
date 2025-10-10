@@ -35,6 +35,6 @@ export const generateChatCompletion = async (
     console.log(error);
     return res
       .status(500)
-      .json({ success: false, message: "Server side errro " });
+      .json({ success: false, message: "Server side errror " });
   }
 };

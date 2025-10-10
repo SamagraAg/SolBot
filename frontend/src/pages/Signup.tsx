@@ -1,7 +1,111 @@
-import React from "react";
-
+import React, { useEffect } from "react";
+import { IoIosLogIn } from "react-icons/io";
+import { Box, Typography, Button } from "@mui/material";
+import CustomizedInput from "../components/shared/CustomizedInput";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
-  return <div>Signup</div>;
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    try {
+      toast.loading("Signing Up", { id: "signup" });
+      await auth?.signup(name, email, password);
+      toast.success("Signed Up Successfully", { id: "signup" });
+    } catch (error) {
+      console.log(error);
+      toast.error("Signup Failed", { id: "signup" });
+    }
+  };
+  useEffect(() => {
+    if (auth?.user) {
+      navigate("/chat");
+    }
+  }, [auth]);
+  return (
+    <Box
+      width="100%"
+      minHeight="100vh"
+      display="flex"
+      flexDirection={{ xs: "column", md: "row" }}
+      alignItems="center"
+      justifyContent="center"
+      sx={{ background: "linear-gradient(135deg, #222831, #393E46)" }}
+      p={2}
+    >
+      {/* Image Section */}
+      <Box
+        display={{ xs: "none", md: "flex" }}
+        flex={1}
+        justifyContent="center"
+        alignItems="center"
+        p={4}
+      >
+        <img
+          src="airobot.png"
+          alt="Robot"
+          style={{ width: "80%", maxWidth: "400px", borderRadius: "20px" }}
+        />
+      </Box>
+
+      {/* Form Section */}
+      <Box
+        display="flex"
+        flex={1}
+        justifyContent="center"
+        alignItems="center"
+        p={2}
+      >
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            width: { xs: "100%", sm: "90%", md: "400px" },
+            p: { xs: 3, sm: 4 },
+            boxShadow: "0 8px 24px rgba(0,0,0,0.6)",
+            borderRadius: 3,
+            backgroundColor: "#393E46",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          <Typography variant="h4" textAlign="center" fontWeight={600} mb={2}>
+            Signup
+          </Typography>
+
+          <CustomizedInput type="text" name="name" label="Name" />
+          <CustomizedInput type="email" name="email" label="Email" />
+          <CustomizedInput type="password" name="password" label="Password" />
+
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              mt: 2,
+              width: "100%",
+              borderRadius: 2,
+              bgcolor: "#00fffc",
+              color: "#000",
+              fontWeight: 600,
+              ":hover": {
+                bgcolor: "#00fffca1",
+              },
+            }}
+            endIcon={<IoIosLogIn />}
+          >
+            Signup
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
 };
 
 export default Signup;

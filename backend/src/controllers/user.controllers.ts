@@ -130,6 +130,68 @@ export const userLogin = async (
       .json({ success: false, message: `Server side error: ${error.message}` });
   }
 };
+export const googleAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    //user login
+    const { name, email, photoURL } = req.body;
+    const user = await User.findOne({ email });
+    if (user) {
+      res.clearCookie(COOKIE_NAME, {
+        httpOnly: true,
+        domain: "localhost",
+        signed: true,
+        path: "/",
+      });
+      const token = createToken(user._id.toString(), user.email, "7d");
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 7);
+      res.cookie(COOKIE_NAME, token, {
+        path: "/", // Cookie valid for all routes
+        domain: "localhost", // Only valid for localhost
+        expires, // Expiry date (7 days)
+        httpOnly: true, // Prevent JS access to cookie
+        signed: true, // Signs cookie using COOKIE_SECRET
+      });
+      return res
+        .status(200)
+        .json({ success: true, name: user.name, email: user.email });
+    }
+    const generatedPassword =
+      Math.random().toString(36).slice(-8) +
+      Math.random().toString(36).slice(-8);
+    const hashedPassword = await hash(generatedPassword, 10);
+    const newuser = new User({ name, email, password: hashedPassword });
+    await newuser.save();
+    res.clearCookie(COOKIE_NAME, {
+      httpOnly: true,
+      domain: "localhost",
+      signed: true,
+      path: "/",
+    });
+    const token = createToken(newuser._id.toString(), newuser.email, "7d");
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+    res.cookie(COOKIE_NAME, token, {
+      path: "/", // Cookie valid for all routes
+      domain: "localhost", // Only valid for localhost
+      expires, // Expiry date (7 days)
+      httpOnly: true, // Prevent JS access to cookie
+      signed: true, // Signs cookie using COOKIE_SECRET
+    });
+    return res
+      .status(201)
+      .json({ success: true, name: newuser.name, email: newuser.email });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Server side error: ${error.message}` });
+  }
+};
 
 export const verifyUser = async (
   req: Request,

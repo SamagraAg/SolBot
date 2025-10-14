@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getAllUsers,
+  googleAuth,
   userLogin,
   userLogout,
   userSignup,
@@ -21,6 +22,7 @@ userRouter.post("/signup", validate(signupValidator), userSignup);
 userRouter.post("/login", validate(loginValidator), userLogin);
 userRouter.get("/auth-status", verifyToken, verifyUser);
 userRouter.get("/logout", verifyToken, userLogout);
+userRouter.post("/google-auth", googleAuth);
 
 
 export default userRouter;

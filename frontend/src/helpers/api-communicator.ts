@@ -21,6 +21,19 @@ export const signupUser = async (
   return data;
 };
 
+export const authUsingGoogle = async (
+  name: string,
+  email: string,
+  photoURL: string
+) => {
+  const res = await axios.post("/user/google-auth", { name, email, photoURL });
+  if (res.status !== 201) {
+    throw new Error(res.data.message);
+  }
+  const data = await res.data;
+  return data;
+};
+
 export const logoutUser = async () => {
   const res = await axios.get("/user/logout");
   if (res.status !== 200) {

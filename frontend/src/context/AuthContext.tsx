@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
+  authUsingGoogle,
   checkAuthStatus,
   loginUser,
   logoutUser,
@@ -16,6 +17,7 @@ type UserAuth = {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
+  googleLogin: (name: string, email: string, photoURL: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 const AuthContext = createContext<UserAuth | null>(null);
@@ -49,6 +51,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoggedIn(true);
     }
   };
+  const googleLogin = async (name: string, email: string, photoURL: string) => {
+    const data = await authUsingGoogle(name, email, photoURL);
+    if (data) {
+      setUser({ email: data.email, name: data.name });
+      setIsLoggedIn(true);
+    }
+  };
   const logout = async () => {
     await logoutUser();
     setIsLoggedIn(false);
@@ -62,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     logout,
     signup,
+    googleLogin,
   };
   return <AuthContext.Provider value={value}> {children}</AuthContext.Provider>;
 };

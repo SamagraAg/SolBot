@@ -27,7 +27,7 @@ export const authUsingGoogle = async (
   photoURL: string
 ) => {
   const res = await axios.post("/user/google-auth", { name, email, photoURL });
-  if (res.status !== 201) {
+  if (res.status !== 200 && res.status !== 201) {
     throw new Error(res.data.message);
   }
   const data = await res.data;

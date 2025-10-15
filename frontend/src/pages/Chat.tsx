@@ -62,7 +62,9 @@ const Chat = () => {
       try {
         const data = await getUserChats();
         setChatMessages(data.chats);
-        toast.success("Successfully loaded chats", { id: "loadchats" });
+        if (data.chats.length !== 0)
+          toast.success("Successfully loaded chats", { id: "loadchats" });
+        else toast.success("No chats to load", { id: "loadchats" });
       } catch (err) {
         console.error(err);
         toast.error("Loading Failed", { id: "loadchats" });
@@ -173,10 +175,14 @@ const Chat = () => {
             scrollbarColor: "#555 transparent",
           }}
         >
-          {chatMessages.map((chat, index) => (
-            //@ts-ignore
-            <ChatItem content={chat.content} role={chat.role} key={index} />
-          ))}
+          {chatMessages.length === 0 ? (
+            <Typography fontSize="40px" textAlign="center" mt={10} color="grey" sx={{ userSelect: 'none' }}>Send a message to begin conversation</Typography>
+          ) : (
+            chatMessages.map((chat, index) => (
+              //@ts-ignore
+              <ChatItem content={chat.content} role={chat.role} key={index} />
+            ))
+          )}
         </Box>
         <div
           style={{

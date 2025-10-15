@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
+import {
+  Box,
+  Avatar,
+  Typography,
+  Button,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
 // import red from "@mui/material/colors/red";
 import { useAuth } from "../context/AuthContext";
 import ChatItem from "../components/chat/ChatItem";
@@ -21,8 +28,12 @@ const Chat = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true);
       toast.loading("Sending new message", { id: "sendChat" });
       const content = inputRef.current?.value as string;
       if (inputRef && inputRef.current) {
@@ -36,6 +47,8 @@ const Chat = () => {
     } catch (error) {
       console.log(error);
       toast.error("Sending message failed", { id: "sendChat" });
+    } finally {
+      setIsSubmitting(false);
     }
 
     //
@@ -68,11 +81,34 @@ const Chat = () => {
       } catch (err) {
         console.error(err);
         toast.error("Loading Failed", { id: "loadchats" });
+      } finally {
+        setIsLoadingChats(false);
       }
     };
 
     fetchChats();
   }, [auth?.user]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+  if (isLoadingChats === true) {
+    return (
+      <Box
+        textAlign={"center"}
+        display={"flex"}
+        flexDirection={"column"}
+        p={"5rem"}
+        fontSize={"2rem"}
+      >
+        Loading Chats....
+        <CircularProgress
+          sx={{ mx: "auto", mt: "2rem" }}
+          enableTrackSlot
+          size="5rem"
+        />
+      </Box>
+    );
+  }
   return (
     <Box
       sx={{
@@ -176,13 +212,22 @@ const Chat = () => {
           }}
         >
           {chatMessages.length === 0 ? (
-            <Typography fontSize="40px" textAlign="center" mt={10} color="grey" sx={{ userSelect: 'none' }}>Send a message to begin conversation</Typography>
+            <Typography
+              fontSize="40px"
+              textAlign="center"
+              mt={10}
+              color="grey"
+              sx={{ userSelect: "none" }}
+            >
+              Send a message to begin conversation
+            </Typography>
           ) : (
             chatMessages.map((chat, index) => (
               //@ts-ignore
               <ChatItem content={chat.content} role={chat.role} key={index} />
             ))
           )}
+          <div ref={messagesEndRef} />
         </Box>
         <div
           style={{
@@ -206,8 +251,18 @@ const Chat = () => {
               color: "silver",
               fontSize: "20px",
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && !isSubmitting) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
           />
-          <IconButton onClick={handleSubmit} sx={{ color: "white", mx: 1 }}>
+          <IconButton
+            disabled={isSubmitting}
+            onClick={handleSubmit}
+            sx={{ color: "white", mx: 1 }}
+          >
             <IoMdSend />
           </IconButton>
         </div>

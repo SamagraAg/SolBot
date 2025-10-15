@@ -4,7 +4,8 @@ import { Box, Typography, Button } from "@mui/material";
 import CustomizedInput from "../components/shared/CustomizedInput";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../components/shared/OAuth";
 const Signup = () => {
   const navigate = useNavigate();
   const auth = useAuth();
@@ -102,6 +103,8 @@ const Signup = () => {
           >
             Signup
           </Button>
+          <OAuth></OAuth>
+        <Typography color="white">Already have a account ? <Link to="/login" style={{color:"white"}}>Login Now</Link></Typography>
         </Box>
       </Box>
     </Box>

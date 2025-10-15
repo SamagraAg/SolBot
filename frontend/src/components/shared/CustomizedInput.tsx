@@ -10,7 +10,7 @@ const CustomizedInput = ({ name, type, label }: Props) => {
   return (
     <TextField
       fullWidth
-      margin="normal"
+      // margin="normal"
       name={name}
       label={label}
       type={type}
